@@ -22,10 +22,11 @@ inline_but_texts = {
 
 msg_texts = {
     'uk': {
+        'start_msg': 'uk fuck russians'
 
     },
     'en': {
-
+        'start_msg': 'en fuck russians'
     }
 }
 
