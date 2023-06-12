@@ -1,4 +1,6 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+import time
+
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, KeyboardButtonRequestChat, InlineKeyboardButton
 from texts import but_texts
 
 
@@ -6,6 +8,10 @@ def start_keyboard(lang: str):
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(KeyboardButton(but_texts[lang]['location']))
     keyboard.add(KeyboardButton(but_texts[lang]['phone']))
+    keyboard.add(KeyboardButton(but_texts[lang]['chat'],
+                                request_chat=KeyboardButtonRequestChat(request_id=int(time.time()),
+                                                                       chat_is_channel=False,
+                                                                       bot_is_member=True)))
     return keyboard
 
 

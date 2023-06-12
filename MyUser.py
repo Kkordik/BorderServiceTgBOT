@@ -1,13 +1,33 @@
+import asyncio
+
 from run_bot import bot
 from aiogram.types import User
 from texts import but_texts
+from Table import Table, Database
+
+
+class UsersTable(Table):
+    """
+    user_id	bigint
+    date_time	datetime
+    phone_country	tinytext
+    country_code	tinytext
+    city	tinytext
+    """
+    __name = "users"
+    __columns = ["user_id", "date_time", "phone_country", "country_code", "city"]
+
+    def __init__(self, db: Database):
+        super().__init__(self.__name, db, self.__columns)
 
 
 class MyUser:
-    def __init__(self, user_id, user: User = None, lang: str = None):
+    def __init__(self, table: UsersTable, user_id, user: User = None, lang: str = None, user_data: dict = None):
+        self._table: UsersTable = table
         self._user: User = user
         self._user_id = user_id
         self._lang = lang
+        self._user_data: dict = user_data
 
     def get_lang(self):
         return self._lang
@@ -20,6 +40,24 @@ class MyUser:
 
     def set_user(self, user: User):
         self._user = user
+
+    def get_user_data(self):
+        return self._user_data
+
+    def set_user_data(self, new_user_data):
+        if isinstance(new_user_data, list):
+            self._user_data = new_user_data[0]
+        elif isinstance(new_user_data, dict):
+            self._user_data = new_user_data
+        else:
+            raise Exception(f'Impossible to set {type(new_user_data)} as user_data')
+
+    async def find_user_data(self):
+        self.set_user_data(await self._table.select_vals(user_id=int(self._user_id)))
+        return self._user_data
+
+    async def insert_user(self, **values):
+        return await self._table.insert_vals(user_id=int(self._user_id), **values)
 
     @staticmethod
     def _adjust_lang(lang: str) -> str:
@@ -50,5 +88,5 @@ class MyUser:
             return self._lang
 
         self._user = await self.find_user()
-        self._lang = self._adjust_lang(self._user.language_code)
+        self.set_lang(self._user.language_code)
         return self._lang
