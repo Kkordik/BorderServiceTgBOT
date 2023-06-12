@@ -5,13 +5,16 @@ from checkpoint.Position.Position import Position
 class GeoPosition(Position):
     __url = "https://nominatim.openstreetmap.org/"
 
-    def __init__(self, latitude, longitude, country_data=None, country_code: str = None):
+    def __init__(self, latitude=None, longitude=None, country_data=None, country_code: str = None):
         super().__init__(country_code=country_code)
         self._latitude = latitude
         self._longitude = longitude
         self._country_data = country_data
 
     async def _get_country_data(self):
+        if not self._longitude or not self._latitude:
+            raise Exception("No coordinates specified to get country_data")
+
         url = self.__url + f"reverse?format=json&lat={self._latitude}&lon={self._longitude}"
 
         async with aiohttp.ClientSession() as session:

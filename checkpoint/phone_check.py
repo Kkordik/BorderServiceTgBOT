@@ -35,6 +35,7 @@ async def phone_hand(message: Message, state: FSMContext):
 
         my_user.set_phone_position(phone_number=message.contact.phone_number)
         country_code = await my_user.phone_position.find_country_code()
+        await my_user.insert_phone_country_code(country_code)
 
         await message.answer(f"{country_code}")
 

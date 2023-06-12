@@ -25,12 +25,14 @@ inline_but_texts = {
 msg_texts = {
     'uk': {
         'start_msg': 'uk fuck russians',
-        'new_chat_member': 'uk <a href="tg://user?id={}">{}</a>'
+        'new_chat_member': 'uk <a href="tg://user?id={}">{}</a>',
+        'have_to_approve': 'have to approve your country'
 
     },
     'en': {
         'start_msg': 'en fuck russians',
-        'new_chat_member': 'en <a href="tg://user?id={}">{}</a>'
+        'new_chat_member': 'en <a href="tg://user?id={}">{}</a>',
+        'have_to_approve': 'have to approve your country'
     }
 }
 

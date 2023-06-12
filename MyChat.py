@@ -1,6 +1,8 @@
 from aiogram.types import Chat
 from Table import Table, Database
 from checkpoint.Requirement import PhoneRequirement, GeoRequirement
+from typing import Union
+
 
 class ChatsTable(Table):
     """
@@ -20,11 +22,13 @@ class ChatsTable(Table):
 
 class MyChat:
     def __init__(self, table: ChatsTable, chat_id, chat: Chat = None, chat_data: dict = None,
-                 phone_requirement: PhoneRequirement = None, geo_requirement: GeoRequirement = None):
+                 requirements_list: list = None, phone_requirement: PhoneRequirement = None,
+                 geo_requirement: GeoRequirement = None):
         self._table: ChatsTable = table
         self._chat: Chat = chat
         self._chat_id = chat_id
         self._chat_data: dict = chat_data
+        self.requirements_list: list = requirements_list
         self.phone_requirement: PhoneRequirement = phone_requirement
         self.geo_requirement: GeoRequirement = geo_requirement
 
@@ -44,5 +48,14 @@ class MyChat:
         return self._chat_data
 
     async def insert_chat(self, **values):
-        print(self._chat_id)
         return await self._table.insert_vals(chat_id=int(self._chat_id), **values)
+
+    async def find_requirements(self, refresh: bool = False):
+        if not self._chat_data or refresh:
+            await self.find_chat_data()
+
+        self.requirements_list = []
+        self.phone_requirement = PhoneRequirement().get_requirement_types_dict()[self._chat_data["require_phone"]]()
+        self.requirements_list.append(self.phone_requirement)
+        self.geo_requirement = GeoRequirement().get_requirement_types_dict()[self._chat_data["require_position"]]()
+        self.requirements_list.append(self.geo_requirement)

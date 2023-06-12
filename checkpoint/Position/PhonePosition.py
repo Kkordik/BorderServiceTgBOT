@@ -5,27 +5,34 @@ from checkpoint.Position.Position import Position
 
 
 class PhonePosition(Position):
-    def __init__(self, phone_number, phone_obj: phonenumbers.PhoneNumber = None, country_code: str = None):
+    def __init__(self, phone_number=None, phone_obj: phonenumbers.PhoneNumber = None, country_code: str = None):
         super().__init__(country_code=country_code)
         self._phone_number: str = self._adjust_phone_number(phone_number)
         self._phone_obj: PhoneNumber = phone_obj
 
     @staticmethod
     def _adjust_phone_number(phone_number) -> str:
-        phone_number = str(phone_number)
+        if phone_number:
+            phone_number = str(phone_number)
 
-        if '+' not in phone_number:
-            phone_number = '+' + phone_number
+            if '+' not in phone_number:
+                phone_number = '+' + phone_number
         return phone_number
 
     @staticmethod
     def _is_kazakhstan(phone_number) -> bool:
+        if not phone_number:
+            raise Exception("No phone number specified to check Kazakhstan")
+
         if phone_number[:3] in ['+76', '+77']:
             return True
         else:
             return False
 
     async def find_country_code(self) -> str:
+        if not self._phone_number:
+            raise Exception("No phone number specified to find country code")
+
         if not self._phone_obj:
             self._phone_obj = phonenumbers.parse(self._phone_number)
 

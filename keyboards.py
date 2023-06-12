@@ -19,3 +19,10 @@ def share_phone_keyboard(lang: str):
     share_phone_keyb = ReplyKeyboardMarkup(resize_keyboard=True)
     share_phone_keyb.add(KeyboardButton(but_texts[lang]['send_phone'], request_contact=True))
     return share_phone_keyb
+
+
+def requirement_keyboard(lang: str, requirements_list: list):
+    requirement_keyb = ReplyKeyboardMarkup(resize_keyboard=True)
+    for requirement in requirements_list:
+        requirement_keyb.add(requirement.keyboard_button(lang=lang))
+    return requirement_keyb

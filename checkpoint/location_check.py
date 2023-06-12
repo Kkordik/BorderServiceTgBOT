@@ -35,8 +35,10 @@ async def location_hand(message: Message, state: FSMContext):
         await state.finish()
         await message.delete()
 
-        my_user.set_geo_position(message.location.latitude, message.location.longitude)
-        await my_user.geo_position.find_country_code()
+        my_user.set_geo_position(latitude=message.location.latitude, longitude=message.location.longitude)
+        country_code = await my_user.geo_position.find_country_code()
+        await my_user.insert_geo_country_code(country_code)
+
         await message.answer(f"{my_user.geo_position.get_country_code()}")
 
         if my_user.geo_position.get_country_code() != 'RU':

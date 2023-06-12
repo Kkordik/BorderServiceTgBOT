@@ -2,6 +2,7 @@ from run_bot import bot
 from aiogram.types import User
 from texts import but_texts
 from Table import Table, Database
+from checkpoint.Position.Position import Position
 from checkpoint.Position.PhonePosition import PhonePosition
 from checkpoint.Position.GeoPosition import GeoPosition
 
@@ -10,12 +11,12 @@ class UsersTable(Table):
     """
     user_id	bigint
     date_time	datetime
-    phone_country	tinytext
-    country_code	tinytext
+    phone_country_code	tinytext
+    geo_country_code	tinytext
     city	tinytext
     """
     __name = "users"
-    __columns = ["user_id", "date_time", "phone_country", "country_code", "city"]
+    __columns = ["user_id", "date_time", "phone_country_code", "geo_country_code", "city"]
 
     def __init__(self, db: Database):
         super().__init__(self.__name, db, self.__columns)
@@ -101,3 +102,35 @@ class MyUser:
         self._user = await self.find_user()
         self.set_lang(self._user.language_code)
         return self._lang
+
+    async def find_phone_position(self, refresh: bool = False) -> PhonePosition:
+        """
+        Takes phone_country_code value from Database users table.
+        :return: PhonePosition(phone_country_code)
+        """
+        if not self._user_data or refresh:
+            await self.find_user_data()
+
+        self.phone_position = PhonePosition(country_code=self._user_data['phone_country_code'])
+        return self.phone_position
+
+    async def find_geo_position(self, refresh: bool = False) -> GeoPosition:
+        """
+        Takes geo_country_code value from Database users table.
+        :return: GeoPosition(geo_country_code)
+        """
+        if not self._user_data or refresh:
+            await self.find_user_data()
+
+        self.geo_position = GeoPosition(country_code=self._user_data['geo_country_code'])
+        return self.geo_position
+
+    async def insert_phone_country_code(self, country_code: str):
+        country_code = Position().adjust_country_code(country_code)
+        return await self._table.update_val(where={"user_id": self._user_id},
+                                            phone_country_code=country_code)
+
+    async def insert_geo_country_code(self, country_code: str):
+        country_code = Position().adjust_country_code(country_code)
+        return await self._table.update_val(where={"user_id": self._user_id},
+                                            geo_country_code=country_code)
