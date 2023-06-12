@@ -1,6 +1,6 @@
-from requirements.location_check import register_location_handler
-from requirements.phone_check import register_phone_handler
-from updates_handling.new_chat_memb import register_new_member_handler
+from checkpoint.location_check import register_location_handler
+from checkpoint.phone_check import register_phone_handler
+from new_user_handling.new_chat_memb import register_new_member_handler
 from aiogram import types
 from keyboards import start_keyboard
 from MyUser import MyUser
@@ -15,8 +15,6 @@ async def start_hand(message: types.Message):
     my_user = MyUser(table=USERS_TB, user_id=message.from_user.id, user=message.from_user)
     await my_user.insert_user()
     await my_user.find_lang()
-    data = await my_user.find_user_data()
-    print(data)
     await message.answer(text=msg_texts[my_user.get_lang()]['start_msg'], reply_markup=start_keyboard(my_user.get_lang()))
 
 
@@ -24,13 +22,9 @@ async def start_hand_group(message: types.Message):
     my_user = MyUser(table=USERS_TB, user_id=message.from_user.id, user=message.from_user)
     await my_user.insert_user()
     await my_user.find_lang()
-    data = await my_user.find_user_data()
-    print(data)
 
     my_chat = MyChat(table=CHATS_TB, chat_id=message.chat.id, chat=message.chat)
     await my_chat.insert_chat()
-    data = await my_chat.find_chat_data()
-    print(data)
 
     await message.answer(text=msg_texts[my_user.get_lang()]['start_msg'])
 

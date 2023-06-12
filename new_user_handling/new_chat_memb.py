@@ -1,11 +1,9 @@
 import asyncio
-
 from aiogram.types import Message, ContentType
 from aiogram import Dispatcher
-from run_bot import dp, bot
-from keyboards import start_keyboard
 from MyUser import MyUser
 from texts import msg_texts
+from run_db import USERS_TB
 
 
 async def new_chat_member(message: Message):
@@ -13,7 +11,7 @@ async def new_chat_member(message: Message):
 
     for new_user in message.new_chat_members:
 
-        my_user = MyUser(user_id=new_user.id, user=new_user)
+        my_user = MyUser(table=USERS_TB, user_id=new_user.id, user=new_user)
         await my_user.find_lang()
 
         my_users.append(my_user)

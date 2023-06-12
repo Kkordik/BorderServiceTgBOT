@@ -1,8 +1,6 @@
-from run_bot import bot
 from aiogram.types import Chat
-from texts import but_texts
 from Table import Table, Database
-
+from checkpoint.Requirement import PhoneRequirement, GeoRequirement
 
 class ChatsTable(Table):
     """
@@ -21,11 +19,14 @@ class ChatsTable(Table):
 
 
 class MyChat:
-    def __init__(self, table: ChatsTable, chat_id, chat: Chat = None, chat_data: dict = None):
+    def __init__(self, table: ChatsTable, chat_id, chat: Chat = None, chat_data: dict = None,
+                 phone_requirement: PhoneRequirement = None, geo_requirement: GeoRequirement = None):
         self._table: ChatsTable = table
         self._chat: Chat = chat
         self._chat_id = chat_id
         self._chat_data: dict = chat_data
+        self.phone_requirement: PhoneRequirement = phone_requirement
+        self.geo_requirement: GeoRequirement = geo_requirement
 
     def get_chat_data(self):
         return self._chat_data

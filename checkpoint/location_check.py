@@ -3,8 +3,8 @@ from aiogram.dispatcher import FSMContext, Dispatcher
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from texts import is_but_text
 from MyUser import MyUser
-from requirements.Position.GeoPosition import GeoPosition
 from keyboards import start_keyboard
+from run_db import USERS_TB
 import asyncio
 
 
@@ -26,7 +26,7 @@ async def location_but_hand(message: Message):
 async def location_hand(message: Message, state: FSMContext):
     data = await state.get_data()
 
-    my_user = MyUser(user_id=message.from_user.id, user=message.from_user)
+    my_user = MyUser(table=USERS_TB, user_id=message.from_user.id, user=message.from_user)
     await my_user.find_lang()
 
     if message.location.live_period and not message.is_forward() and\
@@ -35,11 +35,11 @@ async def location_hand(message: Message, state: FSMContext):
         await state.finish()
         await message.delete()
 
-        position = GeoPosition(message.location.latitude, message.location.longitude)
-        await position.get_country_code()
-        await message.answer(f"{position.country_code}")
+        my_user.set_geo_position(message.location.latitude, message.location.longitude)
+        await my_user.geo_position.find_country_code()
+        await message.answer(f"{my_user.geo_position.get_country_code()}")
 
-        if position.country_code != 'RU':
+        if my_user.geo_position.get_country_code() != 'RU':
             await message.answer('Молодець, козаче!', reply_markup=start_keyboard(my_user.get_lang()))
 
     else:

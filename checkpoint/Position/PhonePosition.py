@@ -1,6 +1,7 @@
 import asyncio
 import phonenumbers
-from requirements.Position.Position import Position
+from phonenumbers import PhoneNumber
+from checkpoint.Position.Position import Position
 
 
 class PhonePosition(Position):
@@ -34,7 +35,7 @@ class PhonePosition(Position):
         else:
             country_code = phonenumbers.region_code_for_country_code(self._phone_obj.country_code)
 
-            if country_code == 'ZZ' or '001':
+            if country_code in ['ZZ', '001']:
                 country_code = 'NAC'  # Not A Country
 
             self.set_country_code(country_code)

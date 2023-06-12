@@ -1,9 +1,9 @@
-import asyncio
-
 from run_bot import bot
 from aiogram.types import User
 from texts import but_texts
 from Table import Table, Database
+from checkpoint.Position.PhonePosition import PhonePosition
+from checkpoint.Position.GeoPosition import GeoPosition
 
 
 class UsersTable(Table):
@@ -22,12 +22,15 @@ class UsersTable(Table):
 
 
 class MyUser:
-    def __init__(self, table: UsersTable, user_id, user: User = None, lang: str = None, user_data: dict = None):
+    def __init__(self, table: UsersTable, user_id, user: User = None, lang: str = None, user_data: dict = None,
+                 phone_position: PhonePosition = None, geo_position: GeoPosition = None):
         self._table: UsersTable = table
         self._user: User = user
         self._user_id = user_id
         self._lang = lang
         self._user_data: dict = user_data
+        self.phone_position: PhonePosition = phone_position
+        self.geo_position: GeoPosition = geo_position
 
     def get_lang(self):
         return self._lang
@@ -40,6 +43,14 @@ class MyUser:
 
     def set_user(self, user: User):
         self._user = user
+
+    def set_phone_position(self, phone_number: str) -> PhonePosition:
+        self.phone_position = PhonePosition(phone_number=phone_number)
+        return self.phone_position
+
+    def set_geo_position(self,  latitude, longitude) -> GeoPosition:
+        self.geo_position = GeoPosition(latitude=latitude, longitude=longitude)
+        return self.geo_position
 
     def get_user_data(self):
         return self._user_data

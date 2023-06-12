@@ -2,7 +2,7 @@ from aiogram.types import Message
 from aiogram.dispatcher import FSMContext, Dispatcher
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import start_keyboard, share_phone_keyboard
-from requirements.Position.PhonePosition import PhonePosition
+from run_db import USERS_TB
 from MyUser import MyUser
 from texts import is_but_text
 import asyncio
@@ -15,7 +15,7 @@ class Phone(StatesGroup):
 
 
 async def phone_but_hand(message: Message):
-    my_user = MyUser(user_id=message.from_user.id, user=message.from_user)
+    my_user = MyUser(table=USERS_TB, user_id=message.from_user.id, user=message.from_user)
     await my_user.find_lang()
 
     await message.answer('Share your phone number', reply_markup=share_phone_keyboard(my_user.get_lang()))
@@ -26,19 +26,19 @@ async def phone_but_hand(message: Message):
 
 
 async def phone_hand(message: Message, state: FSMContext):
-    my_user = MyUser(user_id=message.from_user.id, user=message.from_user)
+    my_user = MyUser(table=USERS_TB, user_id=message.from_user.id, user=message.from_user)
     await my_user.find_lang()
 
     if message.contact.user_id == message.from_user.id:
         await state.finish()
         await message.delete()
 
-        phone = PhonePosition(phone_number=message.contact.phone_number)
-        country_code = await phone.find_country_code()
+        my_user.set_phone_position(phone_number=message.contact.phone_number)
+        country_code = await my_user.phone_position.find_country_code()
 
         await message.answer(f"{country_code}")
 
-        if country_code != 'RU':
+        if country_code not in ['RU']:
             await message.answer('Молодець, козаче!', reply_markup=start_keyboard(my_user.get_lang()))
 
     else:

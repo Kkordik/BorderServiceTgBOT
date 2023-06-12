@@ -1,5 +1,5 @@
 import aiohttp
-from requirements.Position.Position import Position
+from checkpoint.Position.Position import Position
 
 
 class GeoPosition(Position):
